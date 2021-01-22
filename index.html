@@ -64,6 +64,502 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-学生信息管理系统" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/01/22/%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/" class="article-date">
+  <time datetime="2021-01-22T15:14:58.280Z" itemprop="datePublished">2021-01-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#c语言实现学生信息管理系统<br>###代码如下：</p>
+<pre><code>#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt; 
+#include&lt;string.h&gt;
+#include&lt;windows.h&gt;
+struct student
+&#123;
+    char name[10];
+    char sex[5];
+    char number[20];
+    char major[10]; 
+    struct student* next;
+&#125;;
+
+struct Node
+&#123;
+    struct student data;
+    struct Node* next;
+&#125;;
+struct Users
+&#123;
+    char id[11];//用户名 
+    char password[20];//密码 
+    char tel[20];
+&#125;;
+
+struct Node* create_list(void);
+struct Node* create_node(struct student);
+void print_list(struct Node*); 
+void insert_list(struct Node*,struct student);
+void delete_list(struct Node*);
+struct Node* search_list(struct Node*,char*);
+void writeInfoToFile(struct Node* ,char* );
+void readInfofromFile(struct Node*,char* );
+void create_Users();
+void registers();
+int Login();
+void reback();
+
+void menu()
+&#123;
+    printf(&quot;————————【学生信息管理系统】——————\n&quot;);
+    printf(&quot;***1.【录入信息】***\n&quot;); 
+    printf(&quot;***2.【浏览信息】***\n&quot;);
+    printf(&quot;***3.【删除信息】***\n&quot;);
+    printf(&quot;***4.【查询信息】***\n&quot;);
+    printf(&quot;***5.【修改信息】***\n&quot;);
+    printf(&quot;***6.【数据排序】***\n&quot;);
+    printf(&quot;***7.【退出系统】***\n&quot;);
+    printf(&quot;————————————————————————\n&quot;);
+
+&#125;
+void keydown(struct Node* pHead)
+&#123;
+
+    struct student data;
+    struct Node* pMove;
+    int choice=0;
+    printf(&quot;感谢使用，请选择要需要的菜单项-_-：\n&quot;);
+    scanf(&quot;%d&quot;,&amp;choice);
+    switch(choice)
+    &#123;
+        case 1:
+            printf(&quot;——————√【录入信息】√——————\n&quot;);
+            printf(&quot;请输入学生的姓名 性别 学号 专业班级\n&quot;);
+            fflush(stdin);
+            scanf(&quot;%s %s %s %s&quot;,data.name,data.sex,data.number,data.major);
+            insert_list(pHead,data);
+            break;
+        case 2:
+            printf(&quot;——————√【浏览信息】√——————\n&quot;);
+            print_list(pHead);
+            break;
+        case 3:
+            printf(&quot;——————√【删除信息】√——————\n&quot;);
+            delete_list(pHead) ;
+            break;
+        case 4:
+            printf(&quot;——————√【查询信息】√——————\n&quot;);
+            printf(&quot;请输入要查找的学生姓名：\n&quot;);
+            scanf(&quot;%s&quot;,data.name);
+            pMove=search_list(pHead,data.name);
+            if(pMove == NULL)
+            &#123;
+                printf(&quot;未找到相关信息\n&quot;);
+                system(&quot;pause&quot;);
+            &#125;
+            else
+            &#123;
+                printf(&quot;学生姓名——性别——学号——专业班级\n &quot;);
+                printf(&quot;%-5s  %-5s  %-8s  %-10s\n&quot;,pMove-&gt;data.name,pMove-&gt;data.sex,pMove-&gt;data.number,pMove-&gt;data.major);
+            &#125;
+
+            break;
+        case 5:
+            printf(&quot;——————√【修改信息】√——————\n&quot;);
+            printf(&quot;请输入要修改的学生姓名：\n&quot;);
+            scanf(&quot;%s&quot;,data.name);
+            pMove=search_list(pHead,data.name);
+            if(pMove==NULL)
+            &#123;
+                printf(&quot;未找到相关信息\n&quot;);
+                system(&quot;pause&quot;);
+            &#125;
+            else
+            &#123;
+                printf(&quot;请输入修改后的学生信息：\n&quot;);
+
+                if(scanf(&quot;%s%s%s%s&quot;,pMove-&gt;data.name,pMove-&gt;data.sex,pMove-&gt;data.number,pMove-&gt;data.major)==4)
+                &#123;
+                    printf(&quot;修改成功√√√\n&quot;);
+                &#125;
+                else
+                &#123;
+                    printf(&quot;修改失败，请重试！\n&quot;);
+                &#125;
+            &#125;
+            break;
+        case 6:
+            printf(&quot;——————【数据排序】√——————\n&quot;);
+            printf(&quot;该功能正在开发中！\n&quot;);
+            break;
+        case 7:
+            printf(&quot;您已成功退出系统，期待您的下次使用！！！\n&quot;);
+            system(&quot;pause&quot;);
+            exit(0);
+            break;
+        default:
+            printf(&quot;选择错误，请重新输入\n&quot;);
+            system(&quot;pause&quot;);
+            break;
+    &#125;
+        writeInfoToFile(pHead,&quot;学生信息.txt&quot;);
+&#125;
+
+int main(void)
+&#123;
+    int status;
+    struct Node* pHead=NULL;
+    pHead=create_list();
+    readInfofromFile(pHead,&quot;学生信息.txt&quot;);
+    create_Users();
+    status=Login();
+    while(status)
+    &#123;
+        system(&quot;cls&quot;);
+        Sleep(500);
+        menu();
+        keydown(pHead);
+        system(&quot;pause&quot;);
+        system(&quot;cls&quot;);
+     &#125; 
+
+
+    return 0;
+&#125;
+
+struct Node* create_list(void)//创建链表
+&#123;
+    struct Node* pHead=(struct Node*)malloc(sizeof(struct Node));
+    pHead-&gt;next=NULL;
+
+    return pHead;
+&#125;
+struct Node* create_node(struct student data)
+&#123;
+    struct Node* newNode =(struct Node*)malloc(sizeof(struct Node));
+    newNode-&gt;data=data;
+    newNode-&gt;next=NULL;
+
+
+    return newNode;
+&#125;    
+void print_list(struct Node* pHead)
+&#123;
+    struct Node* pMove=pHead-&gt;next;
+    printf(&quot;学生姓名——性别——学号——专业班级\n &quot;);
+    while(pMove!=NULL)
+    &#123;
+        printf(&quot;%-5s  %-5s  %-8s  %-10s\n&quot;,pMove-&gt;data.name,pMove-&gt;data.sex,pMove-&gt;data.number,pMove-&gt;data.major);
+        pMove=pMove-&gt;next;
+    &#125;
+    printf(&quot;\n&quot;); 
+
+&#125;
+void insert_list(struct Node* pHead,struct student data)//新数据的插入 
+&#123;
+    struct Node* pNew=create_node(data);
+    pNew-&gt;next=pHead-&gt;next;
+    pHead-&gt;next=pNew;
+
+&#125;
+void delete_list(struct Node* pHead)
+&#123;
+    char name[10];
+    printf(&quot;请输入要删除的学生姓名\n&quot;);
+    scanf(&quot;%s&quot;,name);
+    struct Node* posNode=pHead-&gt;next;
+    struct Node* posFrontnode=pHead;
+    if(posNode==NULL)
+    &#123;
+        printf(&quot;数据为空，无法删除\n&quot;);
+        return ;
+    &#125;
+    while(strcmp(posNode-&gt;data.name,name)!=0)
+    &#123;
+        posFrontnode=posNode;
+        posNode=posFrontnode-&gt;next;
+        if(NULL==posNode)
+        &#123;
+            printf(&quot;未找到指定位置无法删除\n&quot;);
+            return ;
+        &#125;
+    &#125;
+
+    posFrontnode-&gt;next=posNode-&gt;next;
+    free(posNode);
+
+&#125;
+struct Node* search_list(struct Node* pHead,char* name)
+&#123;
+    struct Node* pMove=pHead-&gt;next;
+
+    while(strcmp(pMove-&gt;data.name,name))
+    &#123;
+        pMove=pMove-&gt;next;
+        if(pMove==NULL)
+        return NULL;
+    &#125;
+    return pMove;
+&#125;
+void readInfofromFile(struct Node* pHead,char* filename)
+&#123;
+    FILE* fp;
+    struct student data;
+    fp = fopen(filename,&quot;r&quot;);
+    if(fp==NULL)
+    &#123;
+        fp=fopen(filename,&quot;w+&quot;);
+    &#125;
+    while(fscanf(fp,&quot;%s %s %s %s&quot;,data.name,data.sex,data.number,data.major)!=EOF)
+    &#123;
+        insert_list(pHead,data);
+    &#125;
+
+    fclose(fp);
+&#125;
+void writeInfoToFile(struct Node* pHead,char* filename)
+&#123;
+    FILE * fp;
+    fp=fopen(filename,&quot;w&quot;);
+    if(fp==NULL)
+    &#123;
+        printf(&quot;打开失败\n&quot;);
+    &#125;
+    struct Node* pMove = pHead-&gt;next;
+    while(pMove)
+    &#123;
+        fprintf(fp,&quot;%s %s %s %s\n&quot;,pMove-&gt;data.name,pMove-&gt;data.sex,pMove-&gt;data.number,pMove-&gt;data.major);
+        pMove=pMove-&gt;next;
+    &#125;
+    fclose(fp);
+&#125;
+void create_Users()
+&#123;
+    FILE * fp;
+
+    if((fp=fopen(&quot;用户信息.txt&quot;,&quot;rb&quot;))==NULL)
+    &#123;
+        if((fp=fopen(&quot;用户信息.txt&quot;,&quot;wb+&quot;))==NULL)
+        &#123;
+            printf(&quot;无法建立该文件！\n&quot;);
+            exit(0);
+        &#125;
+    &#125;
+&#125;
+void registers()//注册新用户 
+&#123;
+    struct Users a,b;
+    FILE * fp;
+    char temp[20];
+    int count = 0;
+    printf(&quot;欢迎来到注册界面！\n&quot;);
+    Sleep(1000);
+    fp = fopen(&quot;用户信息.txt&quot;,&quot;r&quot;);
+    fread(&amp;b,sizeof(struct Users),1,fp);
+    printf(&quot;请输入您的用户名：\n&quot;);
+    scanf(&quot;%s&quot;,a.id);
+    while(1)
+    &#123;
+        if(strcmp(a.id,b.id))
+        &#123;
+            if(!feof(fp))
+            &#123;
+                fread(&amp;b,sizeof(struct Users),1,fp);
+            &#125;
+            else
+            &#123;
+                break;
+            &#125;
+
+        &#125;
+        else
+        &#123;
+            printf(&quot;此用户名已存在！请重新注册！\n&quot;);
+            Sleep(1000);
+
+
+        &#125;
+    &#125;
+    fclose(fp);
+    printf(&quot;接下来输入您的电话号码用以日后找回密码：\n&quot;);
+    scanf(&quot; %s&quot;,a.tel);
+    printf(&quot;接下来请输入您的密码（不超过20位）：\n&quot;);
+    scanf(&quot; %s&quot;,a.password);
+    printf(&quot;请确认您的密码并再次输入：\n&quot;);
+    scanf(&quot; %s&quot;,temp);
+    do&#123;
+        if(!strcmp(a.password,temp))
+        &#123;
+            fp=fopen(&quot;用户信息.txt&quot;,&quot;a&quot;);
+            fwrite(&amp;a,sizeof(struct Users),1,fp);
+            printf(&quot;账号注册成功，请登录！\n&quot;);
+            Sleep(500);
+            fclose(fp);
+            return ;
+        &#125;
+        else
+        &#123;
+            printf(&quot;两次输入不一致请重新输入：\n&quot;);
+            scanf(&quot; %s&quot;,&amp;a.password);
+            printf(&quot;请确认密码并再输入一次：\n&quot;);
+            scanf(&quot; %s&quot;,&amp;temp);
+        &#125;    
+    &#125;while(1);
+
+&#125;
+
+int Login()//登录 
+&#123;
+    int choice;
+    struct Users a,b;
+    FILE * fp;
+    printf(&quot;欢迎使用学生信息管理系统，请先登录：\n&quot;);
+    Sleep(1000);
+    printf(&quot;***注册新用户输入 1\n&quot;);
+    printf(&quot;***已有账号直接登陆输入 2\n&quot;);
+    printf(&quot;***找回密码输入 3\n&quot;);
+
+    scanf(&quot;%d&quot;,&amp;choice); 
+    while(1)
+    &#123;
+        if(1==choice)
+        &#123;
+            registers();
+        &#125;
+        else if(3==choice)
+        &#123;
+            reback();
+        &#125;
+
+        else if(2==choice)
+        &#123;
+            fp=fopen(&quot;用户信息.txt&quot;,&quot;r&quot;);
+            fread(&amp;b,sizeof(struct Users),1,fp);
+            printf(&quot;请输入您的用户名以登录：\n&quot;);
+            scanf(&quot; %s&quot;,a.id);
+            while(1)
+            &#123;
+                if(strcmp(a.id,b.id)==0)
+                &#123;
+                    break;
+                &#125;
+                else
+                &#123;
+                    if(!feof(fp))
+                    &#123;    
+                        fread(&amp;b,sizeof(struct Users),1,fp);
+
+                    &#125;
+                    else
+                    &#123;
+                        printf(&quot;此用户名不存在，请重新输入！\n&quot;);
+                        scanf(&quot; %s&quot;,a.id);
+                        Sleep(500);
+
+
+                    &#125;
+                &#125;    
+            &#125;
+                fclose(fp);
+                printf(&quot;请输入您的密码：\n&quot;);
+                scanf(&quot; %s&quot;,a.password);
+            do
+            &#123;
+                if(strcmp(a.password,b.password)==0)
+                &#123;
+                    fclose(fp);
+                    printf(&quot;登录成功√欢迎您的使用！\n&quot;);
+                    Sleep(500);
+                    return 1;
+                &#125;
+            else
+            &#123;
+                printf(&quot;密码不正确！请重新输入密码：\n&quot;);
+                scanf(&quot; %s&quot;,a.password);
+            &#125;
+            &#125;while(strcmp(a.password,b.password) != 0);
+
+            return 1;
+        &#125;
+        else
+        &#123;
+            printf(&quot;选择错误，请重新选择！\n&quot;);
+            scanf(&quot;%d&quot;,&amp;choice); 
+        &#125;
+
+     &#125; 
+
+&#125;
+void reback()//找回密码
+&#123;
+    struct Users a,b;
+    FILE * fp;
+    char temp[20];
+    int count = 0;
+    printf(&quot;欢迎来到找回密码界面！\n&quot;);
+    Sleep(1000);
+    fp=fopen(&quot;用户信息.txt&quot;,&quot;r&quot;);
+    fread (&amp;b,sizeof(struct Users),1,fp);
+    printf(&quot;请输入您的账号:\n&quot;);
+    scanf(&quot; %s&quot;,a.id);
+    while(1)
+    &#123;
+        if(strcmp(a.id,b.id)==0)
+        &#123;
+            break;
+        &#125;
+        else
+        &#123;
+            if(!feof(fp))
+            &#123;
+                fread(&amp;b,sizeof(struct Users),1,fp);
+
+            &#125;
+            else
+            &#123;
+                printf(&quot;此用户名不存在，请重新输入！\n&quot;);
+                scanf(&quot; %s&quot;,a.id);
+                Sleep(500);
+
+            &#125;
+        &#125;
+    &#125;
+    fclose(fp);
+    printf(&quot;请输入你的电话号码以验证身份：\n&quot;);
+    scanf(&quot; %s&quot;,a.tel);
+    do&#123;
+        if(strcmp(a.tel, b.tel) !=0)
+        &#123;
+            printf(&quot;电话号码不正确！请重新输入：\n&quot;);
+            scanf(&quot; %s&quot;,a.tel);
+
+        &#125;
+    &#125; while(strcmp(a.tel, b.tel) !=0);
+    printf(&quot;身份验证通过！\n&quot;);
+    printf(&quot;您的密码是：%s 请牢记！\n&quot;,b.password);
+    Sleep(3000);
+
+&#125; </code></pre>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/01/22/%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/" data-id="ckk8hn34q00009gq8d5z4d0d4" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-FirstBlog" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/12/01/FirstBlog/" class="article-date">
@@ -195,7 +691,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li></ul>
     </div>
   </div>
 
@@ -206,6 +702,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2021/01/22/%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/">(no title)</a>
+          </li>
         
           <li>
             <a href="/2020/12/01/FirstBlog/">(no title)</a>
@@ -227,7 +727,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2020 John Doe<br>
+      &copy; 2021 John Doe<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
